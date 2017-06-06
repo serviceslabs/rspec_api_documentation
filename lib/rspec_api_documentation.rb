@@ -44,6 +44,7 @@ module RspecApiDocumentation
     autoload :CombinedTextWriter
     autoload :CombinedJsonWriter
     autoload :SlateWriter
+    autoload :ApiBlueprintWriter
     autoload :SwaggerWriter
   end
 
@@ -81,6 +82,8 @@ module RspecApiDocumentation
     autoload :MarkdownExample
     autoload :SlateIndex
     autoload :SlateExample
+    autoload :ApiBlueprintIndex
+    autoload :ApiBlueprintExample
   end
 
   def self.configuration
