@@ -21,6 +21,11 @@ describe RspecApiDocumentation::Swaggers::Node do
       expect(node.another_setting).to eq("default")
     end
 
+    it "should allow setting a schema" do
+      RspecApiDocumentation::Swaggers::Node.add_setting :schema_setting, :schema => String
+      expect(node.schema_setting_schema).to eq(String)
+    end
+
     context "setting can be required" do
       it "should raise error without value and default option" do
         RspecApiDocumentation::Swaggers::Node.add_setting :required_setting, :required => true

@@ -1,4 +1,6 @@
 require 'spec_helper'
+require 'yaml'
+require 'json'
 
 describe RspecApiDocumentation::Swaggers::Root do
   let(:node) { RspecApiDocumentation::Swaggers::Root.new }
@@ -23,5 +25,14 @@ describe RspecApiDocumentation::Swaggers::Root do
     its(:security) { should be_nil }
     its(:tags) { should == [] }
     its(:externalDocs) { should be_nil }
+  end
+
+  describe ".new" do
+    it "should allow initializing from hash" do
+      hash = YAML.load_file(File.expand_path('../swagger.yaml', __FILE__))
+      root = described_class.new(hash)
+
+      expect(JSON.parse(JSON.generate(root.as_json))).to eq(hash)
+    end
   end
 end

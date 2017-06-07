@@ -58,7 +58,7 @@ module RspecApiDocumentation
             produces: example.requests.map { |request| request[:response_content_type] }.compact.map { |q| q[/[^;]+/] }
           )
 
-          paths.public_send(example.route).public_send("#{example.http_method}=", operation)
+          paths.setting(example.route).assign_setting(example.http_method, operation)
         end
         paths
       end
@@ -116,7 +116,7 @@ module RspecApiDocumentation
             name: parameter[:name],
             in: parameter[:in],
             description: parameter[:description],
-            required: parameter[:required],
+            required: parameter[:required] ? parameter[:required] : false,
             type: parameter[:type]
           )
         end
