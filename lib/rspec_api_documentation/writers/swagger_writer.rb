@@ -1,30 +1,35 @@
 require 'rspec_api_documentation/writers/formatter'
+require 'yaml'
 
 module RspecApiDocumentation
   module Writers
     class SwaggerWriter < Writer
-      EXTENSION = 'json'
       FILENAME = 'swagger'
 
-      delegate :docs_dir, to: :configuration
+      delegate :docs_dir, :swagger_config_path, to: :configuration
 
       def write
-        File.open(docs_dir.join("#{FILENAME}.#{EXTENSION}"), 'w+') do |f|
-          f.write Formatter.to_json(SwaggerIndex.new(index, configuration))
+        File.open(docs_dir.join("#{FILENAME}.json"), 'w+') do |f|
+          f.write Formatter.to_json(SwaggerIndex.new(index, configuration, load_config))
         end
+      end
+
+      def load_config
+        YAML.load_file(swagger_config_path) if File.exist?(swagger_config_path)
       end
     end
 
     class SwaggerIndex
-      attr_reader :index, :configuration
+      attr_reader :index, :configuration, :init_config
 
-      def initialize(index, configuration)
+      def initialize(index, configuration, init_config)
         @index = index
         @configuration = configuration
+        @init_config = init_config
       end
 
       def as_json
-        swagger = Swaggers::Root.new
+        swagger = init_config ? Swaggers::Root.new(init_config) : Swaggers::Root.new
         swagger.tags = extract_tags
         swagger.paths = extract_paths
         swagger.as_json
