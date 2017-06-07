@@ -24,10 +24,6 @@ module RspecApiDocumentation
       end
 
       def as_json
-        File.open(configuration.docs_dir.join('tmp.json'), 'w+') do |f|
-          f.write Formatter.to_json(examples)
-        end
-
         swagger = Swaggers::Root.new
         swagger.tags = extract_tags
         swagger.paths = extract_paths
@@ -70,9 +66,11 @@ module RspecApiDocumentation
       def extract_responses(example)
         return [] unless example.respond_to?(:requests)
         responses = Swaggers::Responses.new
+        schema = extract_schema(example.respond_to?(:response_fields) ? example.response_fields : [])
         example.requests.each do |request|
           response = Swaggers::Response.new(
-            description: request[:response_status_text]
+            description: request[:response_status_text],
+            schema: schema
           )
 
           if request[:response_headers]
@@ -92,6 +90,24 @@ module RspecApiDocumentation
         responses
       end
 
+      def extract_schema(fields)
+        schema = {type: 'object', properties: {}}
+
+        fields.each do |field|
+          current = schema
+          if field[:scope]
+            [*field[:scope]].each do |scope|
+              current[:properties][scope] ||= {type: 'object', properties: {}}
+              current = current[:properties][scope]
+            end
+          end
+          current[:properties][field[:name]] = {type: field[:type]}
+          current[:required] ||= [] << field[:name] if field[:required]
+        end
+
+        Swaggers::Schema.new(schema)
+      end
+
       def extract_parameters(example)
         return [] unless example.respond_to?(:parameters)
 
@@ -105,30 +121,16 @@ module RspecApiDocumentation
           )
         end
 
-        schema = {type: 'object', properties: {}}
-        has_body = false
-
-        example.parameters.select { |parameter| !parameter[:skip] && parameter[:in].to_s == 'body' }.each do |parameter|
-          has_body = true
-          current = schema
-          if parameter[:scope]
-            [*parameter[:scope]].each do |scope|
-              current[:properties][scope] ||= {type: 'object', properties: {}}
-              current = current[:properties][scope]
-            end
-          end
-          current[:properties][parameter[:name]] = {type: parameter[:type]}
-          current[:required] ||= [] << parameter[:name] if parameter[:required]
-        end
+        fields = example.parameters.select { |parameter| !parameter[:skip] && parameter[:in].to_s == 'body' }
 
         others.unshift(
           Swaggers::Parameter.new(
             name: 'body',
             in: 'body',
             description: '',
-            schema: Swaggers::Schema.new(schema)
+            schema: extract_schema(fields)
           )
-        ) if has_body
+        ) unless fields.empty?
 
         others
       end
@@ -157,20 +159,6 @@ module RspecApiDocumentation
 
       def route
         super.gsub(/:(?<parameter>[^\/]+)/, '{\k<parameter>}')
-      end
-
-      def as_json
-        {
-          :resource => resource_name,
-          :resource_explanation => resource_explanation,
-          :http_method => http_method,
-          :route => route,
-          :description => description,
-          :explanation => explanation,
-          :parameters => respond_to?(:parameters) ? parameters : [],
-          :response_fields => respond_to?(:response_fields) ? response_fields : [],
-          :requests => requests
-        }
       end
     end
   end
