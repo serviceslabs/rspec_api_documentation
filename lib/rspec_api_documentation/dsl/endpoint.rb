@@ -74,6 +74,12 @@ module RspecApiDocumentation::DSL
       example.metadata[:headers][name] = value
     end
 
+    def authentication(type, opts = {})
+      header(opts[:name], opts[:value]) if type == :apiKey && opts[:in] == :header #@ TODO: bad hard code
+      example.metadata[:authentications] ||= {}
+      example.metadata[:authentications][type] = opts
+    end
+
     def headers
       return unless example.metadata[:headers]
       example.metadata[:headers].inject({}) do |hash, (header, value)|

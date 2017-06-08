@@ -539,6 +539,58 @@ resource "Order" do
     end
   end
 
+  context "authentications" do
+    put "/orders" do
+      authentication :apiKey, :value => "Api Key", :in => :header
+
+      it "should be sent with the request" do |example|
+        expect(example.metadata[:authentications]).to eq({:apiKey => {:value => "Api Key", :in => :header}})
+      end
+
+      context "nested authentications" do
+        authentication :apiKey, :value => "Other Key"
+
+        it "does not affect the outer context's assertions" do
+          # pass
+        end
+      end
+    end
+
+    put "/orders" do
+      context "setting authentication in example level" do
+        before do
+          authentication :apiKey, :value => "Api Key", :in => :header
+        end
+
+        it "adds to headers" do |example|
+          expect(example.metadata[:authentications]).to eq({:apiKey => {:value => "Api Key", :in => :header}})
+        end
+      end
+    end
+
+    put "/orders" do
+      authentication :apiKey, :value => :apikey, :in => :header, :name => "Authorization"
+
+      let(:apikey) { "API_KEY_VALUE" }
+
+      it "should be sent with the request" do |example|
+        expect(example.metadata[:authentications]).to eq({:apiKey => {:value => :apikey, :in => :header, :name => "Authorization"}})
+      end
+
+      it "should fill out into the headers" do
+        expect(headers).to eq({ "Authorization" => "API_KEY_VALUE" })
+      end
+
+      context "nested authentications" do
+        authentication :apiKey, :value => :apikey, :in => :header, :name => "Authorization"
+
+        it "does not affect the outer context's assertions" do
+          expect(headers).to eq({ "Authorization" => "API_KEY_VALUE" })
+        end
+      end
+    end
+  end
+
   context "post body formatter" do
     after do
       RspecApiDocumentation.instance_variable_set(:@configuration, RspecApiDocumentation::Configuration.new)

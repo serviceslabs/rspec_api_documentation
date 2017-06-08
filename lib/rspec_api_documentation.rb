@@ -67,6 +67,8 @@ module RspecApiDocumentation
     autoload :Headers
     autoload :Header
     autoload :Schema
+    autoload :SecurityDefinitions
+    autoload :SecuritySchema
   end
 
   module Views

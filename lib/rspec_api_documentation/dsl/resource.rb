@@ -70,6 +70,11 @@ module RspecApiDocumentation::DSL
         headers[name] = value
       end
 
+      def authentication(type, opts = {})
+        header(opts[:name], opts[:value]) if type == :apiKey && opts[:in] == :header #@ TODO: bad hard code
+        authentications[type] = opts
+      end
+
       def explanation(text)
         safe_metadata(:resource_explanation, text)
       end
@@ -105,6 +110,10 @@ module RspecApiDocumentation::DSL
 
       def headers
         safe_metadata(:headers, {})
+      end
+
+      def authentications
+        safe_metadata(:authentications, {})
       end
 
       def parameter_keys

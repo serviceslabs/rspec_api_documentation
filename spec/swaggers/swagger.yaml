@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  title: Swagger Sample App
+  title: Swagger Sample App Number One
   description: This is a sample server Petstore server.
   termsOfService: 'http://swagger.io/terms/'
   contact:
@@ -50,15 +50,16 @@ paths:
                 name: Order 0
                 paid: true
                 email: email0@example.com
-                created_at: '2017-06-07T11:14:13.016Z'
-                updated_at: '2017-06-07T11:14:13.016Z'
+                created_at: '2017-06-08T13:32:37.570Z'
+                updated_at: '2017-06-08T13:32:37.570Z'
               - id: 2
                 name: Order 1
                 paid: true
                 email: email1@example.com
-                created_at: '2017-06-07T11:14:13.024Z'
-                updated_at: '2017-06-07T11:14:13.024Z'
+                created_at: '2017-06-08T13:32:37.582Z'
+                updated_at: '2017-06-08T13:32:37.582Z'
       deprecated: false
+      security: []
     post:
       tags:
         - Orders
@@ -108,9 +109,10 @@ paths:
               name: Order 1
               paid: true
               email: email@example.com
-              created_at: '2017-06-07T11:14:13.100Z'
-              updated_at: '2017-06-07T11:14:13.100Z'
+              created_at: '2017-06-08T13:32:37.659Z'
+              updated_at: '2017-06-08T13:32:37.659Z'
       deprecated: false
+      security: []
     head:
       tags:
         - Orders
@@ -129,6 +131,7 @@ paths:
           headers: {}
           examples: {}
       deprecated: false
+      security: []
   '/orders/{id}':
     get:
       tags:
@@ -157,9 +160,10 @@ paths:
               name: Old Name
               paid: true
               email: email@example.com
-              created_at: '2017-06-07T11:14:13.131Z'
-              updated_at: '2017-06-07T11:14:13.131Z'
+              created_at: '2017-06-08T13:32:37.699Z'
+              updated_at: '2017-06-08T13:32:37.699Z'
       deprecated: false
+      security: []
     put:
       tags:
         - Orders
@@ -197,6 +201,7 @@ paths:
             properties: {}
           headers: {}
       deprecated: false
+      security: []
     delete:
       tags:
         - Orders
@@ -218,6 +223,7 @@ paths:
             properties: {}
           headers: {}
       deprecated: false
+      security: []
   /uploads:
     post:
       tags:
@@ -242,6 +248,14 @@ paths:
           headers: {}
           examples: {}
       deprecated: false
+      security:
+        - apiKey: []
+securityDefinitions:
+  apiKey:
+    type: apiKey
+    description: Api Key description
+    name: Authorization
+    in: header
 tags:
   - name: Orders
     description: Orders are top-level business objects

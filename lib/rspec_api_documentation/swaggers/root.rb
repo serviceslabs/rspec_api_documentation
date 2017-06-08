@@ -12,7 +12,7 @@ module RspecApiDocumentation
       add_setting :definitions
       add_setting :parameters
       add_setting :responses
-      add_setting :securityDefinitions
+      add_setting :securityDefinitions, :schema => SecurityDefinitions
       add_setting :security
       add_setting :tags, :default => [], :schema => [Tag]
       add_setting :externalDocs

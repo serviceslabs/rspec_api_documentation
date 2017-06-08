@@ -32,6 +32,7 @@ module RspecApiDocumentation
         swagger = init_config ? Swaggers::Root.new(init_config) : Swaggers::Root.new
         swagger.tags = extract_tags
         swagger.paths = extract_paths
+        swagger.securityDefinitions = extract_security_definitions
         swagger.as_json
       end
 
@@ -39,6 +40,27 @@ module RspecApiDocumentation
 
       def examples
         index.examples.map { |example| SwaggerExample.new(example) }
+      end
+
+      def extract_security_definitions
+        security_definitions = Swaggers::SecurityDefinitions.new
+
+        arr = examples.map do |example|
+          example.respond_to?(:authentications) ? example.authentications : nil
+        end.compact
+
+        arr.each do |securities|
+          securities.each do |security, opts|
+            schema = Swaggers::SecuritySchema.new(
+              name: opts[:name],
+              description: opts[:description],
+              type: security,
+              in: opts[:in]
+            )
+            security_definitions.add_setting security, :value => schema
+          end
+        end
+        security_definitions unless arr.empty?
       end
 
       def extract_tags
@@ -60,7 +82,8 @@ module RspecApiDocumentation
             parameters: extract_parameters(example),
             responses: extract_responses(example),
             consumes: example.requests.map { |request| request[:request_content_type] }.compact.map { |q| q[/[^;]+/] },
-            produces: example.requests.map { |request| request[:response_content_type] }.compact.map { |q| q[/[^;]+/] }
+            produces: example.requests.map { |request| request[:response_content_type] }.compact.map { |q| q[/[^;]+/] },
+            security: example.respond_to?(:authentications) ? example.authentications.map { |(k, _)| {k => []} } : []
           )
 
           paths.setting(example.route).assign_setting(example.http_method, operation)

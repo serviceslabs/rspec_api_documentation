@@ -1,6 +1,10 @@
 require 'acceptance_helper'
 
 resource "Uploads" do
+  authentication :apiKey, :value => :api_key, :in => :header, :description => "Api Key description", :name => "Authorization"
+
+  let(:api_key) { "API_KEY" }
+
   post "/uploads" do
     parameter :file, "New file to upload", :in => :formData, :type => :file
 
