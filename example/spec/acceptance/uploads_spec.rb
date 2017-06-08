@@ -2,7 +2,7 @@ require 'acceptance_helper'
 
 resource "Uploads" do
   post "/uploads" do
-    parameter :file, "New file to upload"
+    parameter :file, "New file to upload", :in => :formData, :type => :file
 
     let(:file) { Rack::Test::UploadedFile.new("spec/fixtures/file.png", "image/png") }
 

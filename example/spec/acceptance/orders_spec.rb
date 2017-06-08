@@ -4,10 +4,12 @@ resource "Orders" do
   header "Accept", "application/json"
   header "Content-Type", "application/json"
 
+  explanation "Orders are top-level business objects"
+
   let(:order) { Order.create(:name => "Old Name", :paid => true, :email => "email@example.com") }
 
   get "/orders" do
-    parameter :page, "Current page of orders"
+    parameter :page, "Current page of orders", in: :query, type: :integer
 
     let(:page) { 1 }
 
@@ -30,13 +32,15 @@ resource "Orders" do
   end
 
   post "/orders" do
-    parameter :name, "Name of order", :required => true, :scope => :order
-    parameter :paid, "If the order has been paid for", :required => true, :scope => :order
-    parameter :email, "Email of user that placed the order", :scope => :order
+    with_options :scope => :order, :in => :body do
+      parameter :name, "Name of order", :required => true, :type => :string
+      parameter :paid, "If the order has been paid for", :required => true, :type => :boolean
+      parameter :email, "Email of user that placed the order", :type => :string
+    end
 
-    response_field :name, "Name of order", :scope => :order, "Type" => "String"
-    response_field :paid, "If the order has been paid for", :scope => :order, "Type" => "Boolean"
-    response_field :email, "Email of user that placed the order", :scope => :order, "Type" => "String"
+    response_field :name, "Name of order", :scope => :order, :type => :string
+    response_field :paid, "If the order has been paid for", :scope => :order, :type => :boolean
+    response_field :email, "Email of user that placed the order", :scope => :order, :type => :string
 
     let(:name) { "Order 1" }
     let(:paid) { true }
@@ -61,6 +65,8 @@ resource "Orders" do
   end
 
   get "/orders/:id" do
+    parameter :id, "Id of order", type: :integer, in: :path, required: true
+
     let(:id) { order.id }
 
     example_request "Getting a specific order" do
@@ -70,9 +76,13 @@ resource "Orders" do
   end
 
   put "/orders/:id" do
-    parameter :name, "Name of order", :scope => :order
-    parameter :paid, "If the order has been paid for", :scope => :order
-    parameter :email, "Email of user that placed the order", :scope => :order
+    parameter :id, "Id of order", type: :integer, in: :path, required: true
+
+    with_options :scope => :order, :in => :body do
+      parameter :name, "Name of order", :type => :string
+      parameter :paid, "If the order has been paid for", :type => :boolean
+      parameter :email, "Email of user that placed the order", :type => :string
+    end
 
     let(:id) { order.id }
     let(:name) { "Updated Name" }
@@ -85,6 +95,8 @@ resource "Orders" do
   end
 
   delete "/orders/:id" do
+    parameter :id, "Id of order", type: :integer, in: :path, required: true
+
     let(:id) { order.id }
 
     example_request "Deleting an order" do
