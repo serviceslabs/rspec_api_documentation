@@ -9,6 +9,7 @@ resource "Orders" do
   let(:order) { Order.create(:name => "Old Name", :paid => true, :email => "email@example.com") }
 
   get "/orders" do
+    authentication :apiKey, "API_TOKEN", :in => :header, :name => "AUTH_TOKEN"
     parameter :page, "Current page of orders", in: :query, type: :integer
 
     let(:page) { 1 }
@@ -26,6 +27,8 @@ resource "Orders" do
   end
 
   head "/orders" do
+    authentication :apiKey, "API_TOKEN", :in => :header, :name => "AUTH_TOKEN"
+
     example_request "Getting the headers" do
       expect(response_headers["Cache-Control"]).to eq("max-age=0, private, must-revalidate")
     end

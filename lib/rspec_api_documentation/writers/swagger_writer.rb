@@ -54,10 +54,10 @@ module RspecApiDocumentation
             schema = Swaggers::SecuritySchema.new(
               name: opts[:name],
               description: opts[:description],
-              type: security,
+              type: opts[:type],
               in: opts[:in]
             )
-            security_definitions.add_setting schema.name || security, :value => schema
+            security_definitions.add_setting security, :value => schema
           end
         end
         security_definitions unless arr.empty?
@@ -83,7 +83,7 @@ module RspecApiDocumentation
             responses: extract_responses(example),
             consumes: example.requests.map { |request| request[:request_content_type] }.compact.map { |q| q[/[^;]+/] },
             produces: example.requests.map { |request| request[:response_content_type] }.compact.map { |q| q[/[^;]+/] },
-            security: example.respond_to?(:authentications) ? example.authentications.map { |(k, v)| {v[:name] || k => []} } : []
+            security: example.respond_to?(:authentications) ? example.authentications.map { |(k, _)| {k => []} } : []
           )
 
           paths.setting(example.route).assign_setting(example.http_method, operation)

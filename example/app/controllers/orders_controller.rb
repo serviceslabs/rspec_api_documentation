@@ -1,4 +1,8 @@
 class OrdersController < ApplicationController
+  before_action only: :index do
+    head :unauthorized unless request.headers['HTTP_AUTH_TOKEN'] =~ /\AAPI_TOKEN$/
+  end
+
   def index
     render :json => Order.all
   end

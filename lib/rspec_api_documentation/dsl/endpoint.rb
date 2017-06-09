@@ -74,10 +74,17 @@ module RspecApiDocumentation::DSL
       example.metadata[:headers][name] = value
     end
 
-    def authentication(type, opts = {})
-      header(opts[:name], opts[:value]) if type == :apiKey && opts[:in] == :header #@ TODO: bad hard code
+    def authentication(type, value, opts = {})
+      #@ TODO: bad hard code
+      name =
+        case type
+        when :basic then 'Authorization'
+        when :apiKey then opts[:name]
+        else raise 'Not supported type for authentication'
+        end
+      header(name, value)
       example.metadata[:authentications] ||= {}
-      example.metadata[:authentications][type] = opts
+      example.metadata[:authentications][name] = opts.merge(type: type)
     end
 
     def headers
