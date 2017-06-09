@@ -541,14 +541,25 @@ resource "Order" do
 
   context "authentications" do
     put "/orders" do
-      authentication :apiKey, :value => "Api Key", :in => :header
+      authentication :apiKey, "Api Key", :in => :header, :name => "API_AUTH"
+      authentication :basic, "Api Key"
 
       it "should be sent with the request" do |example|
-        expect(example.metadata[:authentications]).to eq({:apiKey => {:value => "Api Key", :in => :header}})
+        expect(example.metadata[:authentications]).to eq(
+          {
+            "API_AUTH" => {
+              :in => :header,
+              :type => :apiKey,
+              :name => "API_AUTH"
+            },
+            "Authorization" => {
+              type: :basic
+            }
+          })
       end
 
       context "nested authentications" do
-        authentication :apiKey, :value => "Other Key"
+        authentication :apiKey, "Api Key", :in => :header, :name => "API_AUTH"
 
         it "does not affect the outer context's assertions" do
           # pass
@@ -559,33 +570,41 @@ resource "Order" do
     put "/orders" do
       context "setting authentication in example level" do
         before do
-          authentication :apiKey, :value => "Api Key", :in => :header
+          authentication :apiKey, "Api Key", :in => :header, :name => "API_AUTH"
         end
 
         it "adds to headers" do |example|
-          expect(example.metadata[:authentications]).to eq({:apiKey => {:value => "Api Key", :in => :header}})
+          expect(example.metadata[:authentications]).to eq({"API_AUTH" => {
+            :in => :header,
+            :type => :apiKey,
+            :name => "API_AUTH"
+          }})
         end
       end
     end
 
     put "/orders" do
-      authentication :apiKey, :value => :apikey, :in => :header, :name => "Authorization"
+      authentication :apiKey, :api_key, :in => :header, :name => "API_AUTH"
 
-      let(:apikey) { "API_KEY_VALUE" }
+      let(:api_key) { "API_KEY_TOKEN" }
 
       it "should be sent with the request" do |example|
-        expect(example.metadata[:authentications]).to eq({:apiKey => {:value => :apikey, :in => :header, :name => "Authorization"}})
+        expect(example.metadata[:authentications]).to eq({"API_AUTH" => {
+          :in => :header,
+          :type => :apiKey,
+          :name => "API_AUTH"
+        }})
       end
 
       it "should fill out into the headers" do
-        expect(headers).to eq({ "Authorization" => "API_KEY_VALUE" })
+        expect(headers).to eq({ "API_AUTH" => "API_KEY_TOKEN" })
       end
 
       context "nested authentications" do
-        authentication :apiKey, :value => :apikey, :in => :header, :name => "Authorization"
+        authentication :apiKey, :api_key, :in => :header, :name => "API_AUTH"
 
         it "does not affect the outer context's assertions" do
-          expect(headers).to eq({ "Authorization" => "API_KEY_VALUE" })
+          expect(headers).to eq({ "API_AUTH" => "API_KEY_TOKEN" })
         end
       end
     end
