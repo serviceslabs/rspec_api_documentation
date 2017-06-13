@@ -2,7 +2,7 @@ module RspecApiDocumentation
   module Swaggers
     class SecuritySchema < Node
       add_setting :type, :required => true
-      add_setting :description
+      add_setting :description, :default => ''
       add_setting :name
       add_setting :in
       add_setting :flow

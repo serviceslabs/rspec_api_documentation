@@ -1,7 +1,7 @@
 module RspecApiDocumentation
   module Swaggers
     class Header < Node
-      add_setting :description
+      add_setting :description, :default => ''
       add_setting :type, :required => true, :default => lambda { |header|
         case header.public_send('x-example-value')
         when Integer then 'integer'

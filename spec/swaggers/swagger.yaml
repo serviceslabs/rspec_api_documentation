@@ -27,6 +27,7 @@ paths:
       tags:
         - Orders
       summary: Getting a list of orders
+      description: ''
       consumes:
         - application/json
       produces:
@@ -41,29 +42,44 @@ paths:
         '200':
           description: OK
           schema:
+            description: ''
             type: object
             properties: {}
           headers: {}
           examples:
             application/json:
               - id: 1
+                name: Old Name
+                paid: true
+                email: email@example.com
+                created_at: '2017-06-12T14:14:50.481Z'
+                updated_at: '2017-06-12T14:14:50.481Z'
+              - id: 2
+                name: Old Name
+                paid: true
+                email: email@example.com
+                created_at: '2017-06-12T14:14:56.938Z'
+                updated_at: '2017-06-12T14:14:56.938Z'
+              - id: 3
                 name: Order 0
                 paid: true
                 email: email0@example.com
-                created_at: '2017-06-08T13:32:37.570Z'
-                updated_at: '2017-06-08T13:32:37.570Z'
-              - id: 2
+                created_at: '2017-06-13T13:17:38.719Z'
+                updated_at: '2017-06-13T13:17:38.719Z'
+              - id: 4
                 name: Order 1
                 paid: true
                 email: email1@example.com
-                created_at: '2017-06-08T13:32:37.582Z'
-                updated_at: '2017-06-08T13:32:37.582Z'
+                created_at: '2017-06-13T13:17:38.729Z'
+                updated_at: '2017-06-13T13:17:38.729Z'
       deprecated: false
-      security: []
+      security:
+        - AUTH_TOKEN: []
     post:
       tags:
         - Orders
       summary: Creating an order
+      description: ''
       consumes:
         - application/json
       produces:
@@ -74,6 +90,7 @@ paths:
           description: ''
           required: false
           schema:
+            description: ''
             type: object
             properties:
               order:
@@ -91,6 +108,7 @@ paths:
         '201':
           description: Created
           schema:
+            description: ''
             type: object
             properties:
               order:
@@ -105,18 +123,19 @@ paths:
           headers: {}
           examples:
             application/json:
-              id: 1
+              id: 3
               name: Order 1
               paid: true
               email: email@example.com
-              created_at: '2017-06-08T13:32:37.659Z'
-              updated_at: '2017-06-08T13:32:37.659Z'
+              created_at: '2017-06-13T13:17:38.825Z'
+              updated_at: '2017-06-13T13:17:38.825Z'
       deprecated: false
       security: []
     head:
       tags:
         - Orders
       summary: Getting the headers
+      description: ''
       consumes:
         - application/json
       produces:
@@ -126,17 +145,20 @@ paths:
         '200':
           description: OK
           schema:
+            description: ''
             type: object
             properties: {}
           headers: {}
           examples: {}
       deprecated: false
-      security: []
+      security:
+        - AUTH_TOKEN: []
   '/orders/{id}':
     get:
       tags:
         - Orders
       summary: Getting a specific order
+      description: ''
       consumes:
         - application/json
       produces:
@@ -144,39 +166,47 @@ paths:
       parameters:
         - name: id
           in: path
-          description: Id of order
+          description: ''
           required: true
           type: integer
       responses:
         '200':
           description: OK
           schema:
+            description: ''
             type: object
             properties: {}
           headers: {}
           examples:
             application/json:
-              id: 1
+              id: 3
               name: Old Name
               paid: true
               email: email@example.com
-              created_at: '2017-06-08T13:32:37.699Z'
-              updated_at: '2017-06-08T13:32:37.699Z'
+              created_at: '2017-06-13T13:17:38.862Z'
+              updated_at: '2017-06-13T13:17:38.862Z'
       deprecated: false
       security: []
     put:
       tags:
         - Orders
       summary: Updating an order
+      description: ''
       consumes:
         - application/json
       produces: []
       parameters:
+        - name: id
+          in: path
+          description: ''
+          required: true
+          type: integer
         - name: body
           in: body
           description: ''
           required: false
           schema:
+            description: ''
             type: object
             properties:
               order:
@@ -185,18 +215,14 @@ paths:
                   name:
                     type: string
                   paid:
-                    type: boolean
+                    type: string
                   email:
                     type: string
-        - name: id
-          in: path
-          description: Id of order
-          required: true
-          type: integer
       responses:
         '204':
           description: No Content
           schema:
+            description: ''
             type: object
             properties: {}
           headers: {}
@@ -206,19 +232,21 @@ paths:
       tags:
         - Orders
       summary: Deleting an order
+      description: ''
       consumes:
         - application/json
       produces: []
       parameters:
         - name: id
           in: path
-          description: Id of order
+          description: ''
           required: true
           type: integer
       responses:
         '204':
           description: No Content
           schema:
+            description: ''
             type: object
             properties: {}
           headers: {}
@@ -229,6 +257,7 @@ paths:
       tags:
         - Uploads
       summary: Uploading a new file
+      description: ''
       consumes:
         - multipart/form-data
       produces:
@@ -243,20 +272,25 @@ paths:
         '201':
           description: Created
           schema:
+            description: ''
             type: object
             properties: {}
           headers: {}
           examples: {}
       deprecated: false
       security:
-        - apiKey: []
+        - Authorization: []
 securityDefinitions:
-  apiKey:
+  AUTH_TOKEN:
     type: apiKey
-    description: Api Key description
-    name: Authorization
+    description: ''
+    name: AUTH_TOKEN
     in: header
+  Authorization:
+    type: basic
+    description: Api Key description
 tags:
   - name: Orders
     description: Orders are top-level business objects
   - name: Uploads
+    description: ''
