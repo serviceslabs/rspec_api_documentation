@@ -20,6 +20,14 @@ module RspecApiDocumentation
           parameters
         end
 
+        def extended
+          example.metadata.fetch(:parameters, {}).map do |param|
+            p = Marshal.load(Marshal.dump(param))
+            p[:value] = SetParam.new(self, nil, p).value
+            p
+          end
+        end
+
       private
 
         attr_reader :extra_params

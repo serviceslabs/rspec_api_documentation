@@ -39,7 +39,7 @@ module RspecApiDocumentation
         end
       end
 
-      def assign_setting(name, value); public_send("#{name}=", value) end
+      def assign_setting(name, value); public_send("#{name}=", value) unless value.nil? end
       def setting(name); public_send(name) end
       def setting_schema(name); public_send("#{name}_schema") end
       def setting_exist?(name); existing_settings.include?(name) end

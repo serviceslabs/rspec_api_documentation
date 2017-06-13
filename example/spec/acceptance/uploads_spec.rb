@@ -6,7 +6,7 @@ resource "Uploads" do
   let(:api_key) { "Basic #{Base64.encode64('user:password')}" }
 
   post "/uploads" do
-    parameter :file, "New file to upload", :in => :formData, :type => :file
+    parameter :file, "New file to upload"
 
     let(:file) { Rack::Test::UploadedFile.new("spec/fixtures/file.png", "image/png") }
 

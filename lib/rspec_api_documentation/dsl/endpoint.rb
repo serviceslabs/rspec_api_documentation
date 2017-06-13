@@ -38,6 +38,9 @@ module RspecApiDocumentation::DSL
       params_or_body = nil
       path_or_query = path
 
+      extended_parameters
+      extract_route_parameters!
+
       if http_method == :get && !query_string.blank?
         path_or_query += "?#{query_string}"
       else
@@ -85,6 +88,24 @@ module RspecApiDocumentation::DSL
       header(name, value)
       example.metadata[:authentications] ||= {}
       example.metadata[:authentications][name] = opts.merge(type: type)
+    end
+
+    def extract_route_parameters!
+      example.metadata[:route].gsub(URL_PARAMS_REGEX) do |match|
+        value =
+          if extra_params.keys.include?($1)
+            extra_params[$1]
+          elsif respond_to?($1)
+            send($1)
+          else
+            match
+          end
+        extended_parameters << {name: match[1..-1], value: value, in: :path}
+      end
+    end
+
+    def extended_parameters
+      example.metadata[:extended_parameters] ||= Params.new(self, example, nil).extended
     end
 
     def headers
@@ -157,6 +178,5 @@ module RspecApiDocumentation::DSL
     def delete_extra_param(key)
       @extra_params.delete(key.to_sym) || @extra_params.delete(key.to_s)
     end
-
   end
 end

@@ -10,7 +10,7 @@ resource "Orders" do
 
   get "/orders" do
     authentication :apiKey, "API_TOKEN", :in => :header, :name => "AUTH_TOKEN"
-    parameter :page, "Current page of orders", in: :query, type: :integer
+    parameter :page, "Current page of orders"
 
     let(:page) { 1 }
 
@@ -35,10 +35,10 @@ resource "Orders" do
   end
 
   post "/orders" do
-    with_options :scope => :order, :in => :body do
-      parameter :name, "Name of order", :required => true, :type => :string
-      parameter :paid, "If the order has been paid for", :required => true, :type => :boolean
-      parameter :email, "Email of user that placed the order", :type => :string
+    with_options :scope => :order do
+      parameter :name, "Name of order", :required => true
+      parameter :paid, "If the order has been paid for", :required => true
+      parameter :email, "Email of user that placed the order"
     end
 
     response_field :name, "Name of order", :scope => :order, :type => :string
@@ -68,8 +68,6 @@ resource "Orders" do
   end
 
   get "/orders/:id" do
-    parameter :id, "Id of order", type: :integer, in: :path, required: true
-
     let(:id) { order.id }
 
     example_request "Getting a specific order" do
@@ -79,12 +77,10 @@ resource "Orders" do
   end
 
   put "/orders/:id" do
-    parameter :id, "Id of order", type: :integer, in: :path, required: true
-
-    with_options :scope => :order, :in => :body do
-      parameter :name, "Name of order", :type => :string
-      parameter :paid, "If the order has been paid for", :type => :boolean
-      parameter :email, "Email of user that placed the order", :type => :string
+    with_options :scope => :order do
+      parameter :name, "Name of order"
+      parameter :paid, "If the order has been paid for"
+      parameter :email, "Email of user that placed the order"
     end
 
     let(:id) { order.id }
@@ -98,8 +94,6 @@ resource "Orders" do
   end
 
   delete "/orders/:id" do
-    parameter :id, "Id of order", type: :integer, in: :path, required: true
-
     let(:id) { order.id }
 
     example_request "Deleting an order" do

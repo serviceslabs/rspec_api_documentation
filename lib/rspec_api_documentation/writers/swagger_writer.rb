@@ -129,7 +129,7 @@ module RspecApiDocumentation
               current = current[:properties][scope]
             end
           end
-          current[:properties][field[:name]] = {type: field[:type]}
+          current[:properties][field[:name]] = {type: field[:type] || swagger_type(field[:value])}
           current[:required] ||= [] << field[:name] if field[:required]
         end
 
@@ -137,30 +137,85 @@ module RspecApiDocumentation
       end
 
       def extract_parameters(example)
-        return [] unless example.respond_to?(:parameters)
+        known = extract_known_parameters(example.extended_parameters.select { |p| !p[:in].nil? })
+        unknown = extract_unknown_parameters(example, example.extended_parameters.select { |p| p[:in].nil? })
+        known + unknown
+      end
 
-        others = example.parameters.select { |parameter| !parameter[:skip] && !(parameter[:in].to_s == 'body') }.map do |parameter|
-          Swaggers::Parameter.new(
+      def extract_unknown_parameters(example, parameters)
+        result = []
+
+        if example.http_method == :get
+          parameters.each do |parameter|
+            result << Swaggers::Parameter.new(
+              name: parameter[:name],
+              in: :query,
+              description: parameter[:description],
+              required: parameter[:required],
+              type: parameter[:type] || swagger_type(parameter[:value])
+            )
+          end
+        elsif parameters.any? { |parameter| !parameter[:scope].nil? }
+          result.unshift(
+            Swaggers::Parameter.new(
+              name: :body,
+              in: :body,
+              description: '',
+              schema: extract_schema(parameters)
+            )
+          )
+        else
+          parameters.each do |parameter|
+            result << Swaggers::Parameter.new(
+              name: parameter[:name],
+              in: :formData,
+              description: parameter[:description],
+              required: parameter[:required],
+              type: parameter[:type] || swagger_type(parameter[:value])
+            )
+          end
+        end
+
+        result
+      end
+
+      def extract_known_parameters(parameters)
+        result = []
+
+        parameters.select { |parameter| %w(query path header formData).include?(parameter[:in].to_s) }.each do |parameter|
+          result << Swaggers::Parameter.new(
             name: parameter[:name],
             in: parameter[:in],
             description: parameter[:description],
-            required: parameter[:required] ? parameter[:required] : false,
-            type: parameter[:type]
+            required: parameter[:required],
+            type: parameter[:type] || swagger_type(parameter[:value])
           )
         end
 
-        fields = example.parameters.select { |parameter| !parameter[:skip] && parameter[:in].to_s == 'body' }
+        body = parameters.select { |parameter| %w(body).include?(parameter[:in].to_s) }
 
-        others.unshift(
+        result.unshift(
           Swaggers::Parameter.new(
-            name: 'body',
-            in: 'body',
+            name: :body,
+            in: :body,
             description: '',
-            schema: extract_schema(fields)
+            schema: extract_schema(body)
           )
-        ) unless fields.empty?
+        ) unless body.empty?
 
-        others
+        result
+      end
+
+      def swagger_type(value)
+        case value
+        when Rack::Test::UploadedFile then :file
+        when Array then :array
+        when Hash then :object
+        when TrueClass, FalseClass then :boolean
+        when Integer then :integer
+        when Float then :number
+        else :string
+        end
       end
     end
 
