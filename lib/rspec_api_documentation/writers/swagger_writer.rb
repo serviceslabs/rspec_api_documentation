@@ -110,7 +110,7 @@ module RspecApiDocumentation
 
           if /\A(?<response_content_type>[^;]+)/ =~ request[:response_content_type]
             response.examples ||= Swaggers::Example.new
-            response_body = request[:response_body] ? JSON.parse(request[:response_body]) : request[:response_body]
+            response_body = JSON.parse(request[:response_body]) rescue request[:response_body]
             response.examples.add_setting response_content_type, :value => response_body
           end
           responses.add_setting "#{request[:response_status]}", :value => response
