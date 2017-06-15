@@ -68,11 +68,22 @@ resource "Orders" do
   end
 
   get "/orders/:id" do
-    let(:id) { order.id }
+    context "Valid id" do
+      let(:id) { order.id }
 
-    example_request "Getting a specific order" do
-      expect(response_body).to eq(order.to_json)
-      expect(status).to eq(200)
+      example_request "Getting a specific order" do
+        expect(response_body).to eq(order.to_json)
+        expect(status).to eq(200)
+      end
+    end
+
+    context "Invalid id" do
+      let(:id) { "a" }
+
+      example_request "Getting an error" do
+        expect(response_body).to eq ""
+        expect(status).to eq 404
+      end
     end
   end
 

@@ -76,24 +76,24 @@ module RspecApiDocumentation
         examples.each do |example|
           paths.add_setting example.route, :value => Swaggers::Path.new
 
-          operation = Swaggers::Operation.new(
+          operation = paths.setting(example.route).setting(example.http_method) || Swaggers::Operation.new(
             tags: [example.resource_name],
             summary: example.description,
+            responses: Swaggers::Responses.new,
             parameters: extract_parameters(example),
-            responses: extract_responses(example),
             consumes: example.requests.map { |request| request[:request_content_type] }.compact.map { |q| q[/[^;]+/] },
             produces: example.requests.map { |request| request[:response_content_type] }.compact.map { |q| q[/[^;]+/] },
             security: example.respond_to?(:authentications) ? example.authentications.map { |(k, _)| {k => []} } : []
           )
+
+          add_responses(operation.responses, example)
 
           paths.setting(example.route).assign_setting(example.http_method, operation)
         end
         paths
       end
 
-      def extract_responses(example)
-        return [] unless example.respond_to?(:requests)
-        responses = Swaggers::Responses.new
+      def add_responses(responses, example)
         schema = extract_schema(example.respond_to?(:response_fields) ? example.response_fields : [])
         example.requests.each do |request|
           response = Swaggers::Response.new(
