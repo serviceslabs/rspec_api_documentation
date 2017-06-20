@@ -419,7 +419,7 @@ Feature: Generate API Swagger documentation from test examples
               "Orders"
             ],
             "summary": "Getting a specific order",
-            "description": "",
+            "description": "Returns a specific order.",
             "consumes": [
 
             ],

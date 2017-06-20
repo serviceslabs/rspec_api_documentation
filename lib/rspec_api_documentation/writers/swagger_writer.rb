@@ -79,6 +79,7 @@ module RspecApiDocumentation
           operation = paths.setting(example.route).setting(example.http_method) || Swaggers::Operation.new(
             tags: [example.resource_name],
             summary: example.description,
+            description: example.explanation || '',
             responses: Swaggers::Responses.new,
             parameters: extract_parameters(example),
             consumes: example.requests.map { |request| request[:request_content_type] }.compact.map { |q| q[/[^;]+/] },
