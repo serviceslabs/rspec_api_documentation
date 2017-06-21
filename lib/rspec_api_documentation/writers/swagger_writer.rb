@@ -30,7 +30,7 @@ module RspecApiDocumentation
 
       def as_json
         swagger = Swaggers::Root.new(init_config)
-        swagger.tags = extract_tags
+        add_tags(swagger)
         swagger.paths = extract_paths
         swagger.securityDefinitions = extract_security_definitions
         swagger.as_json
@@ -63,12 +63,15 @@ module RspecApiDocumentation
         security_definitions unless arr.empty?
       end
 
-      def extract_tags
+      def add_tags(swagger)
         tags = {}
         examples.each do |example|
-          tags[example.resource_name] = tags[example.resource_name] || example.resource_explanation
+          tags[example.resource_name] ||= example.resource_explanation
         end
-        tags.map { |(k, v)| Swaggers::Tag.new(name: k, description: v) }
+        swagger.tags ||= []
+        tags.each do |name, desc|
+          swagger.tags << Swaggers::Tag.new(name: name, description: desc) unless swagger.tags.any? { |tag| tag.name == name }
+        end
       end
 
       def extract_paths

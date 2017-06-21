@@ -78,6 +78,9 @@ Feature: Generate API Swagger documentation from test examples
         - application/json
       produces:
         - application/json
+      tags:
+        - name: Orders
+          description: Order's tag description
       """
     And   a file named "app_spec.rb" with:
       """
@@ -686,7 +689,7 @@ Feature: Generate API Swagger documentation from test examples
       "tags": [
         {
           "name": "Orders",
-          "description": "Orders resource"
+          "description": "Order's tag description"
         },
         {
           "name": "Instructions",
