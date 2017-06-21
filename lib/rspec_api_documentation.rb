@@ -51,6 +51,7 @@ module RspecApiDocumentation
   module Swaggers
     extend ActiveSupport::Autoload
 
+    autoload :Helper
     autoload :Node
     autoload :Root
     autoload :Info

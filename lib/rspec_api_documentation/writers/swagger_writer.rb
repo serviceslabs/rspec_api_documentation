@@ -29,7 +29,7 @@ module RspecApiDocumentation
       end
 
       def as_json
-        swagger = init_config ? Swaggers::Root.new(init_config) : Swaggers::Root.new
+        swagger = Swaggers::Root.new(init_config)
         swagger.tags = extract_tags
         swagger.paths = extract_paths
         swagger.securityDefinitions = extract_security_definitions
@@ -130,7 +130,7 @@ module RspecApiDocumentation
               current = current[:properties][scope]
             end
           end
-          current[:properties][field[:name]] = {type: field[:type] || swagger_type(field[:value])}
+          current[:properties][field[:name]] = {type: field[:type] || Swaggers::Helper.extract_type(field[:value])}
           current[:required] ||= [] << field[:name] if field[:required]
         end
 
@@ -153,7 +153,7 @@ module RspecApiDocumentation
               in: :query,
               description: parameter[:description],
               required: parameter[:required],
-              type: parameter[:type] || swagger_type(parameter[:value])
+              type: parameter[:type] || Swaggers::Helper.extract_type(parameter[:value])
             )
           end
         elsif parameters.any? { |parameter| !parameter[:scope].nil? }
@@ -172,7 +172,7 @@ module RspecApiDocumentation
               in: :formData,
               description: parameter[:description],
               required: parameter[:required],
-              type: parameter[:type] || swagger_type(parameter[:value])
+              type: parameter[:type] || Swaggers::Helper.extract_type(parameter[:value])
             )
           end
         end
@@ -189,7 +189,7 @@ module RspecApiDocumentation
             in: parameter[:in],
             description: parameter[:description],
             required: parameter[:required],
-            type: parameter[:type] || swagger_type(parameter[:value])
+            type: parameter[:type] || Swaggers::Helper.extract_type(parameter[:value])
           )
         end
 
@@ -205,18 +205,6 @@ module RspecApiDocumentation
         ) unless body.empty?
 
         result
-      end
-
-      def swagger_type(value)
-        case value
-        when Rack::Test::UploadedFile then :file
-        when Array then :array
-        when Hash then :object
-        when TrueClass, FalseClass then :boolean
-        when Integer then :integer
-        when Float then :number
-        else :string
-        end
       end
     end
 

@@ -22,6 +22,8 @@ module RspecApiDocumentation
       end
 
       def initialize(opts = {}, from_opts = false)
+        return unless opts
+
         opts.each do |name, value|
           if from_opts
             add_setting name, :value => from_opts === true ? value : from_opts.new(value)
