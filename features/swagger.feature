@@ -101,7 +101,8 @@ Feature: Generate API Swagger documentation from test examples
         explanation "Orders resource"
 
         get '/orders' do
-          explanation "This URL allows users to interact with all orders."
+          route_summary "This URL allows users to interact with all orders."
+          route_description "Long description."
 
           example_request 'Getting a list of orders' do
             expect(status).to eq(200)
@@ -110,7 +111,7 @@ Feature: Generate API Swagger documentation from test examples
         end
 
         post '/orders' do
-          explanation "This is used to create orders."
+          route_summary "This is used to create orders."
 
           header "Content-Type", "application/json"
 
@@ -132,20 +133,19 @@ Feature: Generate API Swagger documentation from test examples
         end
 
         get '/orders/:id' do
-          explanation "This is used to return orders."
+          route_summary "This is used to return orders."
+          route_description "Returns a specific order."
 
           let(:id) { 1 }
 
           example_request 'Getting a specific order' do
-            explanation 'Returns a specific order.'
-
             expect(status).to eq(200)
             expect(response_body).to eq('{"order":{"name":"Order 1","amount":100.0,"description":"A great order"}}')
           end
         end
 
         put '/orders/:id' do
-          explanation "This is used to update orders."
+          route_summary "This is used to update orders."
 
           parameter :name, 'The order name', required: true, scope: :data
           parameter :amount, required: false, scope: :data
@@ -188,7 +188,7 @@ Feature: Generate API Swagger documentation from test examples
         end
 
         delete '/orders/:id' do
-          explanation "This is used to delete orders."
+          route_summary "This is used to delete orders."
 
           let(:id) { 1 }
 
@@ -203,7 +203,7 @@ Feature: Generate API Swagger documentation from test examples
         explanation 'Instructions help the users use the app.'
 
         get '/instructions' do
-          explanation 'This should be used to get all instructions.'
+          route_summary 'This should be used to get all instructions.'
 
           example_request 'List all instructions' do
             expected_response = {
@@ -282,8 +282,8 @@ Feature: Generate API Swagger documentation from test examples
             "tags": [
               "Orders"
             ],
-            "summary": "Getting a list of orders",
-            "description": "",
+            "summary": "This URL allows users to interact with all orders.",
+            "description": "Long description.",
             "consumes": [
 
             ],
@@ -295,7 +295,7 @@ Feature: Generate API Swagger documentation from test examples
             ],
             "responses": {
               "200": {
-                "description": "OK",
+                "description": "Getting a list of orders",
                 "schema": {
                   "description": "",
                   "type": "object",
@@ -342,7 +342,7 @@ Feature: Generate API Swagger documentation from test examples
             "tags": [
               "Orders"
             ],
-            "summary": "Creating an order",
+            "summary": "This is used to create orders.",
             "description": "",
             "consumes": [
               "application/json"
@@ -380,7 +380,7 @@ Feature: Generate API Swagger documentation from test examples
             ],
             "responses": {
               "201": {
-                "description": "Created",
+                "description": "Creating an order",
                 "schema": {
                   "description": "",
                   "type": "object",
@@ -421,7 +421,7 @@ Feature: Generate API Swagger documentation from test examples
             "tags": [
               "Orders"
             ],
-            "summary": "Getting a specific order",
+            "summary": "This is used to return orders.",
             "description": "Returns a specific order.",
             "consumes": [
 
@@ -440,7 +440,7 @@ Feature: Generate API Swagger documentation from test examples
             ],
             "responses": {
               "200": {
-                "description": "OK",
+                "description": "Getting a specific order",
                 "schema": {
                   "description": "",
                   "type": "object",
@@ -479,7 +479,7 @@ Feature: Generate API Swagger documentation from test examples
             "tags": [
               "Orders"
             ],
-            "summary": "Update an order",
+            "summary": "This is used to update orders.",
             "description": "",
             "consumes": [
               "application/json"
@@ -527,7 +527,7 @@ Feature: Generate API Swagger documentation from test examples
             ],
             "responses": {
               "200": {
-                "description": "OK",
+                "description": "Update an order",
                 "schema": {
                   "description": "",
                   "type": "object",
@@ -550,7 +550,7 @@ Feature: Generate API Swagger documentation from test examples
                 }
               },
               "400": {
-                "description": "Bad Request",
+                "description": "Invalid request",
                 "schema": {
                   "description": "",
                   "type": "object",
@@ -582,7 +582,7 @@ Feature: Generate API Swagger documentation from test examples
             "tags": [
               "Orders"
             ],
-            "summary": "Deleting an order",
+            "summary": "This is used to delete orders.",
             "description": "",
             "consumes": [
               "application/x-www-form-urlencoded"
@@ -601,7 +601,7 @@ Feature: Generate API Swagger documentation from test examples
             ],
             "responses": {
               "200": {
-                "description": "OK",
+                "description": "Deleting an order",
                 "schema": {
                   "description": "",
                   "type": "object",
@@ -635,7 +635,7 @@ Feature: Generate API Swagger documentation from test examples
             "tags": [
               "Instructions"
             ],
-            "summary": "List all instructions",
+            "summary": "This should be used to get all instructions.",
             "description": "",
             "consumes": [
 
@@ -648,7 +648,7 @@ Feature: Generate API Swagger documentation from test examples
             ],
             "responses": {
               "200": {
-                "description": "OK",
+                "description": "List all instructions",
                 "schema": {
                   "description": "",
                   "type": "object",

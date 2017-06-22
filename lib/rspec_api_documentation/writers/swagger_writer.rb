@@ -81,8 +81,8 @@ module RspecApiDocumentation
 
           operation = paths.setting(example.route).setting(example.http_method) || Swaggers::Operation.new(
             tags: [example.resource_name],
-            summary: example.description,
-            description: example.explanation || '',
+            summary: example.respond_to?(:route_summary) ? example.route_summary : '',
+            description: example.respond_to?(:route_description) ? example.route_description : '',
             responses: Swaggers::Responses.new,
             parameters: extract_parameters(example),
             consumes: example.requests.map { |request| request[:request_content_type] }.compact.map { |q| q[/[^;]+/] },
@@ -101,7 +101,7 @@ module RspecApiDocumentation
         schema = extract_schema(example.respond_to?(:response_fields) ? example.response_fields : [])
         example.requests.each do |request|
           response = Swaggers::Response.new(
-            description: request[:response_status_text],
+            description: example.description,
             schema: schema
           )
 

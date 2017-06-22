@@ -360,9 +360,22 @@ resource "Order" do
 
   context "#explanation" do
     post "/orders" do
+      route_summary "Route summary"
+      route_description "Route description"
+
       example "Creating an order" do |example|
         explanation "By creating an order..."
         expect(example.metadata[:explanation]).to eq("By creating an order...")
+        expect(example.metadata[:route_summary]).to eq("Route summary")
+        expect(example.metadata[:route_description]).to eq("Route description")
+      end
+
+      context "Nested context" do
+        example "Inner example" do |example|
+          expect(example.metadata[:explanation]).to be_nil
+          expect(example.metadata[:route_summary]).to eq("Route summary")
+          expect(example.metadata[:route_description]).to eq("Route description")
+        end
       end
     end
   end
