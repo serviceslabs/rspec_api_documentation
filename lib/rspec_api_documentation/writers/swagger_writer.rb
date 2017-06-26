@@ -30,8 +30,8 @@ module RspecApiDocumentation
 
       def as_json
         swagger = Swaggers::Root.new(init_config)
-        add_tags(swagger)
-        swagger.paths = extract_paths
+        add_tags!(swagger)
+        add_paths!(swagger)
         swagger.securityDefinitions = extract_security_definitions
         swagger.as_json
       end
@@ -63,41 +63,40 @@ module RspecApiDocumentation
         security_definitions unless arr.empty?
       end
 
-      def add_tags(swagger)
+      def add_tags!(swagger)
         tags = {}
         examples.each do |example|
           tags[example.resource_name] ||= example.resource_explanation
         end
-        swagger.tags ||= []
+        swagger.safe_assign_setting(:tags, [])
         tags.each do |name, desc|
           swagger.tags << Swaggers::Tag.new(name: name, description: desc) unless swagger.tags.any? { |tag| tag.name == name }
         end
       end
 
-      def extract_paths
-        paths = Swaggers::Paths.new
+      def add_paths!(swagger)
+        swagger.safe_assign_setting(:paths, Swaggers::Paths.new)
         examples.each do |example|
-          paths.add_setting example.route, :value => Swaggers::Path.new
+          swagger.paths.add_setting example.route, :value => Swaggers::Path.new
 
-          operation = paths.setting(example.route).setting(example.http_method) || Swaggers::Operation.new(
-            tags: [example.resource_name],
-            summary: example.respond_to?(:route_summary) ? example.route_summary : '',
-            description: example.respond_to?(:route_description) ? example.route_description : '',
-            responses: Swaggers::Responses.new,
-            parameters: extract_parameters(example),
-            consumes: example.requests.map { |request| request[:request_content_type] }.compact.map { |q| q[/[^;]+/] },
-            produces: example.requests.map { |request| request[:response_content_type] }.compact.map { |q| q[/[^;]+/] },
-            security: example.respond_to?(:authentications) ? example.authentications.map { |(k, _)| {k => []} } : []
-          )
+          operation = swagger.paths.setting(example.route).setting(example.http_method) || Swaggers::Operation.new()
 
-          add_responses(operation.responses, example)
+          operation.safe_assign_setting(:tags, [example.resource_name])
+          operation.safe_assign_setting(:summary, example.respond_to?(:route_summary) ? example.route_summary : '')
+          operation.safe_assign_setting(:description, example.respond_to?(:route_description) ? example.route_description : '')
+          operation.safe_assign_setting(:responses, Swaggers::Responses.new)
+          operation.safe_assign_setting(:parameters, extract_parameters(example))
+          operation.safe_assign_setting(:consumes, example.requests.map { |request| request[:request_content_type] }.compact.map { |q| q[/[^;]+/] })
+          operation.safe_assign_setting(:produces, example.requests.map { |request| request[:response_content_type] }.compact.map { |q| q[/[^;]+/] })
+          operation.safe_assign_setting(:security, example.respond_to?(:authentications) ? example.authentications.map { |(k, _)| {k => []} } : [])
 
-          paths.setting(example.route).assign_setting(example.http_method, operation)
+          add_responses!(operation.responses, example)
+
+          swagger.paths.setting(example.route).assign_setting(example.http_method, operation)
         end
-        paths
       end
 
-      def add_responses(responses, example)
+      def add_responses!(responses, example)
         schema = extract_schema(example.respond_to?(:response_fields) ? example.response_fields : [])
         example.requests.each do |request|
           response = Swaggers::Response.new(
@@ -106,14 +105,14 @@ module RspecApiDocumentation
           )
 
           if request[:response_headers]
-            response.headers ||= Swaggers::Headers.new
+            response.safe_assign_setting(:headers, Swaggers::Headers.new)
             request[:response_headers].each do |header, value|
               response.headers.add_setting header, :value => Swaggers::Header.new('x-example-value' => value)
             end
           end
 
           if /\A(?<response_content_type>[^;]+)/ =~ request[:response_content_type]
-            response.examples ||= Swaggers::Example.new
+            response.safe_assign_setting(:examples, Swaggers::Example.new)
             response_body = JSON.parse(request[:response_body]) rescue nil
             response.examples.add_setting response_content_type, :value => response_body
           end

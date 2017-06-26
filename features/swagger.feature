@@ -81,6 +81,13 @@ Feature: Generate API Swagger documentation from test examples
       tags:
         - name: Orders
           description: Order's tag description
+      paths:
+        /instructions:
+          get:
+            description: This description came from config.yml 1
+        /orders:
+          post:
+            description: This description came from config.yml 2
       """
     And   a file named "app_spec.rb" with:
       """
@@ -277,6 +284,61 @@ Feature: Generate API Swagger documentation from test examples
         "application/json"
       ],
       "paths": {
+        "/instructions": {
+          "get": {
+            "tags": [
+              "Instructions"
+            ],
+            "summary": "This should be used to get all instructions.",
+            "description": "This description came from config.yml 1",
+            "consumes": [
+
+            ],
+            "produces": [
+              "text/html"
+            ],
+            "parameters": [
+
+            ],
+            "responses": {
+              "200": {
+                "description": "List all instructions",
+                "schema": {
+                  "description": "",
+                  "type": "object",
+                  "properties": {
+                  }
+                },
+                "headers": {
+                  "Content-Type": {
+                    "description": "",
+                    "type": "string",
+                    "x-example-value": "text/html;charset=utf-8"
+                  },
+                  "Content-Length": {
+                    "description": "",
+                    "type": "string",
+                    "x-example-value": "57"
+                  }
+                },
+                "examples": {
+                  "text/html": {
+                    "data": {
+                      "id": "1",
+                      "type": "instructions",
+                      "attributes": {
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "deprecated": false,
+            "security": [
+
+            ]
+          }
+        },
         "/orders": {
           "get": {
             "tags": [
@@ -343,7 +405,7 @@ Feature: Generate API Swagger documentation from test examples
               "Orders"
             ],
             "summary": "This is used to create orders.",
-            "description": "",
+            "description": "This description came from config.yml 2",
             "consumes": [
               "application/json"
             ],
@@ -621,61 +683,6 @@ Feature: Generate API Swagger documentation from test examples
                   }
                 },
                 "examples": {
-                }
-              }
-            },
-            "deprecated": false,
-            "security": [
-
-            ]
-          }
-        },
-        "/instructions": {
-          "get": {
-            "tags": [
-              "Instructions"
-            ],
-            "summary": "This should be used to get all instructions.",
-            "description": "",
-            "consumes": [
-
-            ],
-            "produces": [
-              "text/html"
-            ],
-            "parameters": [
-
-            ],
-            "responses": {
-              "200": {
-                "description": "List all instructions",
-                "schema": {
-                  "description": "",
-                  "type": "object",
-                  "properties": {
-                  }
-                },
-                "headers": {
-                  "Content-Type": {
-                    "description": "",
-                    "type": "string",
-                    "x-example-value": "text/html;charset=utf-8"
-                  },
-                  "Content-Length": {
-                    "description": "",
-                    "type": "string",
-                    "x-example-value": "57"
-                  }
-                },
-                "examples": {
-                  "text/html": {
-                    "data": {
-                      "id": "1",
-                      "type": "instructions",
-                      "attributes": {
-                      }
-                    }
-                  }
                 }
               }
             },
