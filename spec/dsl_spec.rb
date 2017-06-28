@@ -721,7 +721,29 @@ resource "Order" do
       end
     end
   end
+
+  get "parameter with custom method only" do
+    parameter :custom, "Custom name parameter", method: :custom_method, scope: :some
+
+    context do
+      let(:custom) { "Should not be taken" }
+      let(:some_custom) { "Should not be taken" }
+
+      it "not uses custom as value" do
+        expect(params).to eq({})
+      end
+    end
+
+    context do
+      let(:custom_method) { "Should be taken" }
+
+      it "uses custom_method as value" do
+        expect(params).to eq("some" => {"custom" => "Should be taken"})
+      end
+    end
+  end
 end
+
 
 resource "top level parameters" do
   parameter :page, "Current page"

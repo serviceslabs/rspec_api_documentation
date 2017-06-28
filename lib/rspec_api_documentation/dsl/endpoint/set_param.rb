@@ -50,9 +50,8 @@ module RspecApiDocumentation
 
         def method_name
           @method_name ||= begin
-            [custom_method_name, scoped_key, key].find do |name|
-              name && example_group.respond_to?(name)
-            end
+            names = custom_method_name ? [custom_method_name] : [scoped_key, key]
+            names.find { |name| name && example_group.respond_to?(name) }
           end
         end
 
