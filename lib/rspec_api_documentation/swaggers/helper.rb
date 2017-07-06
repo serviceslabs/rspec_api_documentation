@@ -14,6 +14,12 @@ module RspecApiDocumentation
         else :string
         end
       end
+
+      def extract_items(value)
+        result = {type: extract_type(value)}
+        result[:items] = extract_items(value[0]) if result[:type] == :array
+        result
+      end
     end
   end
 end

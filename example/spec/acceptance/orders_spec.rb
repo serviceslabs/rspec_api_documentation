@@ -39,6 +39,7 @@ resource "Orders" do
       parameter :name, "Name of order", :required => true
       parameter :paid, "If the order has been paid for", :required => true
       parameter :email, "Email of user that placed the order"
+      parameter :data, "Array of string", :type => :array, :items => {:type => :string}
     end
 
     response_field :name, "Name of order", :scope => :order, :type => :string
@@ -48,6 +49,7 @@ resource "Orders" do
     let(:name) { "Order 1" }
     let(:paid) { true }
     let(:email) { "email@example.com" }
+    let(:data) { ["good", "bad"] }
 
     let(:raw_post) { params.to_json }
 

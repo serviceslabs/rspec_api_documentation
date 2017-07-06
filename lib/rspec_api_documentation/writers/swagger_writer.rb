@@ -133,6 +133,11 @@ module RspecApiDocumentation
             end
           end
           current[:properties][field[:name]] = {type: field[:type] || Swaggers::Helper.extract_type(field[:value])}
+
+          if current[:properties][field[:name]][:type] == :array
+            current[:properties][field[:name]][:items] = field[:items] || Swaggers::Helper.extract_items(field[:value][0])
+          end
+
           current[:required] ||= [] << field[:name] if field[:required]
         end
 
@@ -150,13 +155,15 @@ module RspecApiDocumentation
 
         if example.http_method == :get
           parameters.each do |parameter|
-            result << Swaggers::Parameter.new(
+            elem = Swaggers::Parameter.new(
               name: parameter[:name],
               in: :query,
               description: parameter[:description],
               required: parameter[:required],
               type: parameter[:type] || Swaggers::Helper.extract_type(parameter[:value])
             )
+            elem.items = parameter[:items] || Swaggers::Helper.extract_items(parameter[:value][0]) if elem.type == :array
+            result << elem
           end
         elsif parameters.any? { |parameter| !parameter[:scope].nil? }
           result.unshift(
@@ -169,13 +176,15 @@ module RspecApiDocumentation
           )
         else
           parameters.each do |parameter|
-            result << Swaggers::Parameter.new(
+            elem = Swaggers::Parameter.new(
               name: parameter[:name],
               in: :formData,
               description: parameter[:description],
               required: parameter[:required],
               type: parameter[:type] || Swaggers::Helper.extract_type(parameter[:value])
             )
+            elem.items = parameter[:items] || Swaggers::Helper.extract_items(parameter[:value][0]) if elem.type == :array
+            result << elem
           end
         end
 
@@ -186,13 +195,15 @@ module RspecApiDocumentation
         result = []
 
         parameters.select { |parameter| %w(query path header formData).include?(parameter[:in].to_s) }.each do |parameter|
-          result << Swaggers::Parameter.new(
+          elem = Swaggers::Parameter.new(
             name: parameter[:name],
             in: parameter[:in],
             description: parameter[:description],
             required: parameter[:required],
             type: parameter[:type] || Swaggers::Helper.extract_type(parameter[:value])
           )
+          elem.items = parameter[:items] || Swaggers::Helper.extract_items(parameter[:value][0]) if elem.type == :array
+          result << elem
         end
 
         body = parameters.select { |parameter| %w(body).include?(parameter[:in].to_s) }

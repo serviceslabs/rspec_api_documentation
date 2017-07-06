@@ -111,6 +111,15 @@ Feature: Generate API Swagger documentation from test examples
           route_summary "This URL allows users to interact with all orders."
           route_description "Long description."
 
+          parameter :one_level_array, type: :array, items: {type: :string}
+          parameter :two_level_array, type: :array, items: {type: :array, items: {type: :string}}
+
+          parameter :one_level_arr
+          parameter :two_level_arr
+
+          let(:one_level_arr) { ['value1', 'value2'] }
+          let(:two_level_arr) { [[5.1, 3.0], [1.0, 4.5]] }
+
           example_request 'Getting a list of orders' do
             expect(status).to eq(200)
             expect(response_body).to eq('{"page":1,"orders":[{"name":"Order 1","amount":9.99,"description":null},{"name":"Order 2","amount":100.0,"description":"A great order"}]}')
@@ -125,13 +134,15 @@ Feature: Generate API Swagger documentation from test examples
           parameter :name, scope: :data
           parameter :description, scope: :data
           parameter :amount, scope: :data
+          parameter :values, scope: :data
 
           example 'Creating an order' do
             request = {
               data: {
                 name: "Order 1",
                 amount: 100.0,
-                description: "A description"
+                description: "A description",
+                values: [5.0, 1.0]
               }
             }
             do_request(request)
@@ -353,7 +364,52 @@ Feature: Generate API Swagger documentation from test examples
               "application/vnd.api+json"
             ],
             "parameters": [
-
+              {
+                "name": "one_level_array",
+                "in": "query",
+                "description": " one level array",
+                "required": false,
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              {
+                "name": "two_level_array",
+                "in": "query",
+                "description": " two level array",
+                "required": false,
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "name": "one_level_arr",
+                "in": "query",
+                "description": " one level arr",
+                "required": false,
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              {
+                "name": "two_level_arr",
+                "in": "query",
+                "description": " two level arr",
+                "required": false,
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  }
+                }
+              }
             ],
             "responses": {
               "200": {
@@ -432,7 +488,13 @@ Feature: Generate API Swagger documentation from test examples
                           "type": "string"
                         },
                         "amount": {
-                          "type": "string"
+                          "type": "number"
+                        },
+                        "values": {
+                          "type": "array",
+                          "items": {
+                            "type": "number"
+                          }
                         }
                       }
                     }
@@ -573,7 +635,7 @@ Feature: Generate API Swagger documentation from test examples
                           "type": "string"
                         },
                         "amount": {
-                          "type": "string"
+                          "type": "integer"
                         },
                         "description": {
                           "type": "string"

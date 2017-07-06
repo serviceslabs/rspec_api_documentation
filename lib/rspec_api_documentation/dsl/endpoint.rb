@@ -105,7 +105,7 @@ module RspecApiDocumentation::DSL
     end
 
     def extended_parameters
-      example.metadata[:extended_parameters] ||= Params.new(self, example, nil).extended
+      example.metadata[:extended_parameters] ||= Params.new(self, example, extra_params).extended
     end
 
     def headers

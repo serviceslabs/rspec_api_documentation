@@ -8,6 +8,7 @@ module RspecApiDocumentation
       add_setting :schema
       add_setting :type
       add_setting :format
+      add_setting :items
     end
   end
 end
