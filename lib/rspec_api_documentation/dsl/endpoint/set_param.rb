@@ -15,6 +15,10 @@ module RspecApiDocumentation
           hash.deep_merge build_param_hash(key_scope || [key])
         end
 
+        def value
+          example_group.send(method_name) if method_name
+        end
+
       private
 
         attr_reader :parent, :hash, :param
@@ -46,15 +50,14 @@ module RspecApiDocumentation
 
         def method_name
           @method_name ||= begin
-            [custom_method_name, scoped_key, key].find do |name|
-              name && example_group.respond_to?(name)
-            end
+            names = custom_method_name ? [custom_method_name] : [scoped_key, key]
+            names.find { |name| name && example_group.respond_to?(name) }
           end
         end
 
         def build_param_hash(keys)
-          value = keys[1] ? build_param_hash(keys[1..-1]) : example_group.send(method_name)
-          { keys[0].to_s => value }
+          v = keys[1] ? build_param_hash(keys[1..-1]) : value
+          { keys[0].to_s => v }
         end
       end
     end

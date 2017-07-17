@@ -51,6 +51,15 @@ module RspecApiDocumentation
       end
     end
 
+
+    add_setting :swagger_config_path, :default => lambda { |config|
+      if defined?(Rails)
+        Rails.root.join("config", "swagger.yml")
+      else
+        Pathname.new("config/swagger.yml")
+      end
+    }
+
     add_setting :docs_dir, :default => lambda { |config|
       if defined?(Rails)
         Rails.root.join("doc", "api")

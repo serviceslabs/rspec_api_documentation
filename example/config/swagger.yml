@@ -1,0 +1,23 @@
+swagger: '2.0'
+info:
+  title: Swagger Sample App Number One
+  description: This is a sample server Petstore server.
+  termsOfService: 'http://swagger.io/terms/'
+  contact:
+    name: API Support
+    url: 'http://www.swagger.io/support'
+    email: support@swagger.io
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  version: 1.0.1
+host: 'localhost:3000'
+schemes:
+  - http
+  - https
+consumes:
+  - application/json
+  - application/xml
+produces:
+  - application/json
+  - application/xml

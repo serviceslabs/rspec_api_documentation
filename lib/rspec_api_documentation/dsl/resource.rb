@@ -70,6 +70,26 @@ module RspecApiDocumentation::DSL
         headers[name] = value
       end
 
+      def authentication(type, value, opts = {})
+        #@ TODO: bad hard code
+        name =
+          case type
+          when :basic then 'Authorization'
+          when :apiKey then opts[:name]
+          else raise 'Not supported type for authentication'
+          end
+        header(name, value)
+        authentications[name] = opts.merge(type: type)
+      end
+
+      def route_summary(text)
+        safe_metadata(:route_summary, text)
+      end
+
+      def route_description(text)
+        safe_metadata(:route_description, text)
+      end
+
       def explanation(text)
         safe_metadata(:resource_explanation, text)
       end
@@ -105,6 +125,10 @@ module RspecApiDocumentation::DSL
 
       def headers
         safe_metadata(:headers, {})
+      end
+
+      def authentications
+        safe_metadata(:authentications, {})
       end
 
       def parameter_keys
